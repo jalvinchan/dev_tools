@@ -1,6 +1,6 @@
 # Dev Tools
 
-A small local toolbox (Markdown, JSON, Regex, URL, Base64, UUID, time, diff). It runs as a **Chrome extension** or as a plain HTML file.
+A small local toolbox (Markdown, JSON, Regex, URL, Base64, Protobuf, UUID, time, diff). It runs as a **Chrome extension** or as a plain HTML file.
 
 ## Load as a Chrome extension
 
@@ -19,6 +19,8 @@ python3 scripts/sync_vendor.py
 ```
 
 Nothing auto-updates. Chrome would otherwise keep serving the copies you last committed until you change them.
+
+The Protobuf tab can decode without a schema (field numbers) or with a pasted `.proto` (field names). Multiple schemas are saved in the browser via New / Save / Delete.
 
 ## Open as a normal page
 

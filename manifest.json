@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Dev Tools",
-  "description": "Local developer utilities: Markdown, JSON, Regex, URL, Base64, UUID, time, and diff.",
+  "description": "Local developer utilities: Markdown, JSON, Regex, URL, Base64, Protobuf, UUID, time, and diff.",
   "version": "1.0.0",
   "action": {
     "default_title": "Dev Tools",
