@@ -1,0 +1,35 @@
+{
+  "note": "Pinned third-party files used by index.html. Chrome extensions cannot load these from a CDN. Bump a version, then run: python3 scripts/sync_vendor.py",
+  "libraries": [
+    {
+      "name": "marked",
+      "version": "13.0.3",
+      "file": "marked.min.js",
+      "url": "https://cdn.jsdelivr.net/npm/marked@13.0.3/marked.min.js"
+    },
+    {
+      "name": "dompurify",
+      "version": "3.0.6",
+      "file": "purify.min.js",
+      "url": "https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"
+    },
+    {
+      "name": "highlight.js",
+      "version": "11.9.0",
+      "file": "highlight.min.js",
+      "url": "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"
+    },
+    {
+      "name": "highlight.js (github theme)",
+      "version": "11.9.0",
+      "file": "github.min.css",
+      "url": "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css"
+    },
+    {
+      "name": "jsdiff",
+      "version": "5.2.0",
+      "file": "diff.min.js",
+      "url": "https://cdnjs.cloudflare.com/ajax/libs/jsdiff/5.2.0/diff.min.js"
+    }
+  ]
+}
