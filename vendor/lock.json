@@ -30,6 +30,12 @@
       "version": "5.2.0",
       "file": "diff.min.js",
       "url": "https://cdnjs.cloudflare.com/ajax/libs/jsdiff/5.2.0/diff.min.js"
+    },
+    {
+      "name": "protobufjs",
+      "version": "7.4.0",
+      "file": "protobuf.min.js",
+      "url": "https://cdn.jsdelivr.net/npm/protobufjs@7.4.0/dist/protobuf.min.js"
     }
   ]
 }

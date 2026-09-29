@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Sort tools if needed, or rely on script load order. 
     // We'll use the order in which they registered or a predefined list if we want specific order.
     // For now, let's just iterate the Tools object.
-    const toolNames = ['markdown', 'json', 'regex', 'url', 'base64', 'uuid', 'time', 'diff'];
+    const toolNames = ['markdown', 'json', 'regex', 'url', 'base64', 'protobuf', 'uuid', 'time', 'diff'];
     
     toolNames.forEach(name => {
         const config = window.Tools[name];
