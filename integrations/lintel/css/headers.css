@@ -1,0 +1,81 @@
+/* Keep the rule editor's styles inside its tool panel. */
+#tool-headers { font-size: 14px; line-height: 1.45; }
+#tool-headers * { box-sizing: border-box; }
+#tool-headers [hidden] { display: none !important; }
+#tool-headers .headers-editor { padding: 24px; }
+#tool-headers .page { max-width: 960px; margin: 0 auto; padding-bottom: 40px; }
+#tool-headers .mast { display: flex; justify-content: space-between; gap: 24px; align-items: center; margin-bottom: 18px; }
+#tool-headers h1 { margin: 0; font-size: 26px; font-weight: 600; }
+#tool-headers .lede { margin: 6px 0 0; color: #57606a; }
+#tool-headers .master { display: flex; align-items: center; gap: 10px; font-weight: 600; white-space: nowrap; }
+#tool-headers button,
+#tool-headers input,
+#tool-headers select { font: inherit; color: inherit; }
+#tool-headers button { border: 1px solid #d0d7de; background: #f6f8fa; border-radius: 6px; padding: 6px 10px; cursor: pointer; }
+#tool-headers button.primary { background: #24292e; color: #fff; border-color: #24292e; }
+#tool-headers button.quiet { background: transparent; border-color: transparent; color: #57606a; }
+#tool-headers button.danger { color: #cf222e; }
+#tool-headers button:disabled { opacity: 0.4; cursor: default; }
+#tool-headers button:focus-visible,
+#tool-headers input:focus-visible,
+#tool-headers select:focus-visible { outline: 2px solid #0969da; outline-offset: 2px; }
+#tool-headers .switch { position: relative; display: inline-flex; width: 44px; height: 26px; flex: none; }
+#tool-headers .switch input { position: absolute; inset: 0; z-index: 1; margin: 0; opacity: 0; cursor: pointer; }
+#tool-headers .switch .track { width: 100%; border-radius: 999px; background: #d0d7de; position: relative; }
+#tool-headers .switch .track::after { content: ""; position: absolute; width: 20px; height: 20px; top: 3px; left: 3px; border-radius: 50%; background: #fff; transition: transform 120ms ease; }
+#tool-headers .switch input:checked + .track { background: #0969da; }
+#tool-headers .switch input:checked + .track::after { transform: translateX(18px); }
+#tool-headers .switch input:focus-visible + .track { outline: 2px solid #0969da; outline-offset: 2px; }
+#tool-headers .rules { display: flex; flex-direction: column; gap: 12px; margin: 16px 0; }
+#tool-headers .priority-note { margin: 0; }
+#tool-headers .rule { border: 1px solid #d0d7de; border-radius: 8px; padding: 14px; display: flex; flex-direction: column; gap: 12px; }
+#tool-headers .rule.has-error { border-color: #cf222e; }
+#tool-headers .rule.is-off { opacity: 0.72; }
+#tool-headers .rule-top,
+#tool-headers .rule-actions { display: flex; align-items: center; gap: 8px; }
+#tool-headers .rank { width: 1.4rem; text-align: right; color: #57606a; font-variant-numeric: tabular-nums; }
+#tool-headers .label-input { flex: 1; min-width: 0; border: 1px solid transparent; background: transparent; border-radius: 6px; padding: 6px 8px; }
+#tool-headers .label-input:hover,
+#tool-headers .label-input:focus { border-color: #d0d7de; }
+#tool-headers .header-rows { display: flex; flex-direction: column; gap: 8px; }
+#tool-headers .header-row,
+#tool-headers .scope-row,
+#tool-headers .extra-row { display: grid; gap: 10px; }
+#tool-headers .header-row { grid-template-columns: minmax(0, 1.1fr) 120px minmax(0, 1.2fr) auto; align-items: end; }
+#tool-headers .scope-row { grid-template-columns: 160px minmax(0, 1fr); }
+#tool-headers .extra-row { grid-template-columns: minmax(180px, 0.7fr) minmax(0, 1.3fr); }
+#tool-headers .domains-field,
+#tool-headers .regex-field { grid-column: 2; grid-row: 1; }
+#tool-headers .field { display: flex; flex-direction: column; gap: 4px; min-width: 0; font-size: 12px; color: #57606a; }
+#tool-headers .field input,
+#tool-headers .field select { width: 100%; background: #fff; color: #24292e; border: 1px solid #d0d7de; border-radius: 6px; padding: 8px 10px; }
+#tool-headers .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 13px; }
+#tool-headers .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+#tool-headers .chips label { display: inline-flex; align-items: center; gap: 6px; border: 1px solid #d0d7de; border-radius: 6px; padding: 4px 8px; text-transform: uppercase; font-size: 11px; }
+#tool-headers .chips label:has(input:checked) { background: #24292e; color: #fff; border-color: #24292e; }
+#tool-headers .chips input { margin: 0; }
+#tool-headers .hint { margin: 0; color: #57606a; font-size: 12px; }
+#tool-headers .status { min-height: 1.4em; margin: 0; }
+#tool-headers .status[data-tone="ok"] { color: #1a7f37; }
+#tool-headers .status[data-tone="warn"] { color: #9a6700; }
+#tool-headers .status[data-tone="error"],
+#tool-headers .rule-error,
+#tool-headers .row-error { color: #cf222e; }
+#tool-headers .rule-error,
+#tool-headers .row-error { margin: 0; font-size: 12px; }
+#tool-headers .row-error { grid-column: 1 / -1; }
+#tool-headers .rule-error:empty,
+#tool-headers .row-error:empty { display: none; }
+#tool-headers .footnote { margin: 28px 0 0; max-width: 80ch; }
+#tool-headers .empty { border: 1px dashed #d0d7de; border-radius: 8px; padding: 24px 16px; color: #57606a; }
+
+@media (max-width: 1050px) {
+  #tool-headers .mast { flex-direction: column; align-items: flex-start; gap: 12px; }
+  #tool-headers .header-row,
+  #tool-headers .scope-row,
+  #tool-headers .extra-row { grid-template-columns: 1fr; }
+  #tool-headers .domains-field,
+  #tool-headers .regex-field { grid-column: auto; grid-row: auto; }
+  #tool-headers .rule-top { flex-wrap: wrap; }
+  #tool-headers .rule-actions { flex-wrap: wrap; }
+}

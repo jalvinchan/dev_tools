@@ -1,0 +1,168 @@
+--- a/app/extension-app.js
++++ b/app/extension-app.js
+@@ -5,7 +5,7 @@
+ 
+ export function createExtensionApp(chrome) {
+   if (!chrome?.storage?.local || !chrome?.declarativeNetRequest) {
+-    throw new Error("Lintel needs the Chrome extension APIs.");
++    throw new Error("Header overrides need the Chrome extension APIs.");
+   }
+   return new ExtensionController({
+     repository: new ChromeRuleRepository(chrome.storage.local),
+--- a/app/extension-client.js
++++ b/app/extension-client.js
+@@ -26,10 +26,10 @@
+     try {
+       response = await this.runtime.sendMessage(message);
+     } catch (error) {
+-      throw new Error(`reach Lintel background: ${error.message}`);
++      throw new Error(`Could not reach the header overrides background: ${error.message}`);
+     }
+     if (!response?.ok) {
+-      throw new Error(response?.error || "Lintel background did not respond.");
++      throw new Error(response?.error || "The header overrides background did not respond.");
+     }
+     return response.result;
+   }
+--- a/app/extension-messages.js
++++ b/app/extension-messages.js
+@@ -1,8 +1,8 @@
+ export const ExtensionMessage = Object.freeze({
+-  load: "load",
+-  saveRules: "saveRules",
+-  setEnabled: "setEnabled",
+-  sync: "sync",
++  load: "headers:load",
++  saveRules: "headers:saveRules",
++  setEnabled: "headers:setEnabled",
++  sync: "headers:sync",
+ });
+ 
+ export async function handleExtensionMessage(app, message) {
+@@ -16,6 +16,6 @@
+     case ExtensionMessage.sync:
+       return app.sync();
+     default:
+-      throw new Error("Unknown Lintel message.");
++      throw new Error("Unknown Header overrides message.");
+   }
+ }
+--- a/model/header-constraints.js
++++ b/model/header-constraints.js
+@@ -9,7 +9,7 @@
+   cookie2: "Cookie2 is obsolete, and Chrome blocks it.",
+   "keep-alive": "Chrome manages Keep-Alive itself.",
+   "transfer-encoding": "Chrome manages Transfer-Encoding itself.",
+-  "set-cookie": "Set-Cookie is a response header. Lintel changes the request.",
++  "set-cookie": "Set-Cookie is a response header. This tool changes request headers.",
+   "available-dictionary": "Chrome manages Available-Dictionary itself.",
+   connection: "Chrome manages Connection itself.",
+ });
+--- a/net/chrome-dynamic-rule-gateway.js
++++ b/net/chrome-dynamic-rule-gateway.js
+@@ -1,13 +1,11 @@
+-import { DynamicRuleGateway } from "./dynamic-rule-gateway.js";
+ 
+ const REGEX_REASONS = Object.freeze({
+   syntaxError: "URL regex has a syntax error.",
+   memoryLimitExceeded: "URL regex is too complex for Chrome.",
+ });
+ 
+-export class ChromeDynamicRuleGateway extends DynamicRuleGateway {
++export class ChromeDynamicRuleGateway {
+   constructor(declarativeNetRequest) {
+-    super();
+     this.dnr = declarativeNetRequest;
+   }
+ 
+--- a/presentation/editor-view.js
++++ b/presentation/editor-view.js
+@@ -75,9 +75,8 @@
+     this.root.replaceChildren(h("div", { class: "page" },
+       h("header", { class: "mast" },
+         h("div", { class: "brand" },
+-          mark(),
+           h("div", {},
+-            h("h1", {}, "Lintel"),
++            h("h1", {}, "Header Modifier"),
+             h("p", { class: "lede" }, "Request headers you set yourself, for the sites you choose."),
+           ),
+         ),
+@@ -86,7 +85,7 @@
+       this.status,
+       list,
+       h("div", { class: "page-actions" }, add),
+-      h("p", { class: "hint footnote" }, "Rules stay in this browser profile. Lintel does not send them anywhere. Chrome still refuses Host, Content-Length, Connection, and Proxy-* headers. Check the result in DevTools, on the request headers."),
++      h("p", { class: "hint footnote" }, "Rules save automatically in this browser profile and are never sent anywhere. Chrome refuses Host, Content-Length, Connection, and Proxy-* headers. Check the result in Chrome DevTools, on the request headers."),
+     ));
+ 
+     if (previous?.message) this.setStatus(previous);
+@@ -142,7 +141,7 @@
+     if (!rule) return;
+     rule.headers.push({ operation: "set", header: "", value: "" });
+     this.render({ enabled: this.#enabled(), rules });
+-    this.root.querySelector(`[data-id="${CSS.escape(id)}"] .header-row:last-of-type .header`)?.focus();
++    this.root.querySelector(`[data-id="${CSS.escape(id)}"] .header-row:last-of-type .header-name`)?.focus();
+     this.onRules();
+   }
+ 
+@@ -277,7 +276,7 @@
+       enabled: card.querySelector(".rule-enabled").checked,
+       label: card.querySelector(".label-input").value,
+       headers: [...card.querySelectorAll(".header-row")].map((row) => ({
+-        header: row.querySelector(".header").value,
++        header: row.querySelector(".header-name").value,
+         operation: row.querySelector(".operation").value,
+         value: row.querySelector(".value").value,
+       })),
+@@ -296,7 +295,7 @@
+   remove.disabled = count === 1;
+   return h("div", { class: "header-row" },
+     h("label", { class: "field" }, "Header", h("input", {
+-      class: "header mono",
++      class: "header-name mono",
+       type: "text",
+       placeholder: "x-debug",
+       value: change.header || "",
+@@ -337,15 +336,6 @@
+   }));
+ }
+ 
+-function mark() {
+-  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+-  svg.setAttribute("viewBox", "0 0 32 32");
+-  svg.setAttribute("class", "mark");
+-  svg.setAttribute("aria-hidden", "true");
+-  svg.innerHTML = '<path fill="currentColor" d="M4 7h24v6H4zM7 13h4v12H7zM21 13h4v12h-4z"/>';
+-  return svg;
+-}
+-
+ function h(tag, attrs, ...children) {
+   const node = document.createElement(tag);
+   for (const [key, value] of Object.entries(attrs ?? {})) {
+--- a/storage/chrome-rule-repository.js
++++ b/storage/chrome-rule-repository.js
+@@ -1,19 +1,17 @@
+ import { Profile } from "../model/profile.js";
+-import { RuleRepository } from "./rule-repository.js";
+ 
+-const ENABLED_KEY = "enabled";
+-const RULES_KEY = "rules";
++const ENABLED_KEY = "headerOverridesEnabled";
++const RULES_KEY = "headerOverridesRules";
+ 
+-export class ChromeRuleRepository extends RuleRepository {
++export class ChromeRuleRepository {
+   constructor(storageArea) {
+-    super();
+     this.storage = storageArea;
+   }
+ 
+   async load() {
+     try {
+       const stored = await this.storage.get([ENABLED_KEY, RULES_KEY]);
+-      return Profile.fromStorage(stored ?? {});
++      return Profile.fromStorage({ enabled: stored?.[ENABLED_KEY], rules: stored?.[RULES_KEY] });
+     } catch (error) {
+       throw new Error(`load header rules: ${error.message}`);
+     }

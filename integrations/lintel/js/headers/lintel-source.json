@@ -1,0 +1,21 @@
+{
+  "repository": "lintel",
+  "revision": "61b11028284bd330415022500fae8b685e8b2685",
+  "patch_sha256": "3a6d162456172f335dad4ab4eb79c6c08f00509400753ac65fb3d92b0fede8ef",
+  "files": {
+    "app/extension-app.js": "22c3482a17699e1c998d481b3be03dae97ee10245df9f52529855cde592d737e",
+    "app/extension-client.js": "54667777df26c96d5327f5099fd1022fedef983899db60af9f24bab79739b705",
+    "app/extension-controller.js": "528bccff5ba3c7ac27fc10af75f5d5f7942ff374415fcfc885c7ab544032c834",
+    "app/extension-messages.js": "e8fcb19d1b2ad7c0cb9fbdf4a704c76f4449548f3851061f51a497e1917bea79",
+    "core/rule-compiler.js": "970b98fe8274d9a619b606a4538d3a92c80a38e46902b1d90a39aedafa08c265",
+    "model/header-constraints.js": "f633dd76f69dbf105c98da5963b7a06f346acb96426f2508662ac38def723e1f",
+    "model/header-rule.js": "9bc3c09e20a1388a21650f8a32a0ddc56960b752ca325d6439ca41ec9ab7717e",
+    "model/profile.js": "75c0a066205682d1bcfc3450d60f498e255e202e10394079002fe988d897a2fe",
+    "model/rule-kinds.js": "0e223a9685b54b3821551b120cbae9e6cb3c6feda87da9b414ed43d462df4911",
+    "model/site-pattern.js": "875dba9cab756106351be2c755e11a3a458e9a99c7bd8ccd1b24f97c3ebb0a83",
+    "net/chrome-dynamic-rule-gateway.js": "be8406727b7a7f987bf7fa569b18ff630091ba021e5d9121ed33424ee0ecd48e",
+    "presentation/apply-status.js": "522a891eed4c2546ffe32dc705257665edab63cc89160996b0e3b5f70b0c54d9",
+    "presentation/editor-view.js": "8186d8bd28dc22a044c5af46af8a0894282b197b8e37ce948701c80926c65679",
+    "storage/chrome-rule-repository.js": "3ae32858dad57e7e2088264b12662a77feb3f29eedd20f31a24bc713e622a9b7"
+  }
+}
