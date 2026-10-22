@@ -36,6 +36,12 @@
       "version": "7.4.0",
       "file": "protobuf.min.js",
       "url": "https://cdn.jsdelivr.net/npm/protobufjs@7.4.0/dist/protobuf.min.js"
+    },
+    {
+      "name": "mermaid",
+      "version": "12.2.0",
+      "file": "mermaid.min.js",
+      "url": "https://cdn.jsdelivr.net/npm/mermaid@12.2.0/dist/mermaid.min.js"
     }
   ]
 }

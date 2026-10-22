@@ -17,7 +17,7 @@ window.registerTool('markdown', {
       <div id="md-output" class="markdown-body"></div>
       <div id="md-empty" class="markdown-body" style="display:none">Paste Markdown on the left to render here.</div>
       <div style="height:24px"></div>
-      <div class="markdown-body" style="opacity:.6">Rendered with Marked + DOMPurify + Highlight.js</div>
+      <div class="markdown-body" style="opacity:.6">Rendered with Marked + DOMPurify + Highlight.js + Mermaid</div>
       <div style="height:24px"></div>
       <div class="markdown-body" style="opacity:.6">This page stores your input locally in the browser.</div>
       <div style="height:24px"></div>
@@ -35,8 +35,68 @@ window.registerTool('markdown', {
         const mdSample = document.getElementById('md-sample');
         const key = 'markdown_renderer_input_v1';
         const widthKey = 'markdown_renderer_left_px_v1';
+        let renderToken = 0;
+        let diagramChain = Promise.resolve();
+
+        if (typeof mermaid !== 'undefined') {
+            mermaid.initialize({
+                startOnLoad: false,
+                securityLevel: 'strict',
+                suppressErrorRendering: true
+            });
+        }
+
+        function sanitizeSvg(svg) {
+            return DOMPurify.sanitize(svg, {
+                USE_PROFILES: { svg: true, svgFilters: true },
+                ADD_TAGS: ['foreignObject', 'style']
+            });
+        }
+
+        function showDiagramError(el, err) {
+            const pre = document.createElement('pre');
+            pre.className = 'mermaid-error';
+            pre.textContent = err && err.message ? err.message : String(err || 'Invalid Mermaid diagram');
+            el.replaceWith(pre);
+        }
+
+        function takeDiagrams() {
+            const slots = [];
+            mdOutput.querySelectorAll('pre > code.language-mermaid').forEach((code, index) => {
+                const slot = document.createElement('div');
+                slot.className = 'mermaid-diagram';
+                slot.setAttribute('role', 'img');
+                slot.setAttribute('aria-label', 'Mermaid diagram');
+                code.parentElement.replaceWith(slot);
+                slots.push({ el: slot, source: code.textContent.replace(/\n$/, ''), index: index });
+            });
+            return slots;
+        }
+
+        async function drawDiagrams(token, slots) {
+            for (const slot of slots) {
+                if (token !== renderToken) return;
+                const source = slot.source.trim();
+                if (!source) {
+                    showDiagramError(slot.el, 'Empty Mermaid diagram');
+                    continue;
+                }
+                const id = 'md-mermaid-' + token + '-' + slot.index;
+                try {
+                    const rendered = await mermaid.render(id, source);
+                    if (token !== renderToken) return;
+                    slot.el.innerHTML = sanitizeSvg(rendered.svg);
+                    const orphan = document.getElementById(id);
+                    if (orphan && !slot.el.contains(orphan)) orphan.remove();
+                } catch (err) {
+                    if (token !== renderToken) return;
+                    showDiagramError(slot.el, err);
+                }
+            }
+        }
 
         function render(value) {
+            const token = ++renderToken;
             if (!value) {
                 mdOutput.style.display = 'none';
                 mdEmpty.style.display = 'block';
@@ -49,7 +109,10 @@ window.registerTool('markdown', {
             const html = marked.parse(value);
             const clean = DOMPurify.sanitize(html, { USE_PROFILES: { html: true } });
             mdOutput.innerHTML = clean;
-            hljs.highlightAll();
+            const slots = typeof mermaid === 'undefined' ? [] : takeDiagrams();
+            mdOutput.querySelectorAll('pre code').forEach(block => hljs.highlightElement(block));
+            if (!slots.length) return;
+            diagramChain = diagramChain.then(() => drawDiagrams(token, slots), () => drawDiagrams(token, slots));
         }
 
         function save() {
@@ -69,7 +132,43 @@ window.registerTool('markdown', {
         mdClear.addEventListener('click', () => { mdInput.value = ''; render(''); save(); });
         mdCopy.addEventListener('click', async () => { try { await navigator.clipboard.writeText(mdInput.value); } catch (e) { } });
         mdSample.addEventListener('click', () => {
-            const sample = "# Markdown Preview\\n\\nPaste or type Markdown in the left pane.\\n\\n## Features\\n\\n- GitHub-flavored Markdown\\n- Sanitized HTML output\\n- Syntax highlighting\\n\\n### Code\\n\\n```javascript\\nfunction greet(name){\\n  console.log(`Hello, ${name}`);\\n}\\ngreet('world');\\n```\\n\\n> Blockquotes and lists work too.\\n\\n1. One\\n2. Two\\n3. Three\\n";
+            const sample = [
+                '# Markdown Preview',
+                '',
+                'Paste or type Markdown in the left pane.',
+                '',
+                '## Features',
+                '',
+                '- GitHub-flavored Markdown',
+                '- Sanitized HTML output',
+                '- Syntax highlighting',
+                '- Mermaid diagrams',
+                '',
+                '### Code',
+                '',
+                '```javascript',
+                'function greet(name){',
+                '  console.log(`Hello, ${name}`);',
+                '}',
+                "greet('world');",
+                '```',
+                '',
+                '```mermaid',
+                'classDiagram',
+                '  class Order {',
+                '    +submit()',
+                '  }',
+                '  class Payment',
+                '  Order --> Payment',
+                '```',
+                '',
+                '> Blockquotes and lists work too.',
+                '',
+                '1. One',
+                '2. Two',
+                '3. Three',
+                ''
+            ].join('\n');
             mdInput.value = sample; render(sample); save();
         });
 

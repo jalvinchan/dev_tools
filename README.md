@@ -1,6 +1,6 @@
 # Dev Tools
 
-A small local toolbox (Markdown, JSON, Regex, URL, Base64, Protobuf, UUID, time, diff). It runs as a **Chrome extension** or as a plain HTML file.
+A small local toolbox (Markdown, JSON, Regex, URL, Base64, Protobuf, UUID, time, diff). It runs as a **Chrome extension** or as a plain HTML file. The Markdown preview renders GitHub-flavored Markdown, and fenced `mermaid` blocks render as diagrams.
 
 ## Load as a Chrome extension
 
